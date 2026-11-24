@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlowPortal · Architecture, workflow &amp; UML diagrams</title>
+<meta name="description" content="Interactive diagram tool for technology architecture (on-prem, cloud, hybrid), workflows and UML, with a scale advisor and design review.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header id="top">
+  <div class="brand">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="10" height="8" rx="2" fill="#38bdf8"/><rect x="15" y="1" width="10" height="8" rx="2" fill="#a78bfa"/><rect x="8" y="17" width="10" height="8" rx="2" fill="#fbbf24"/><path d="M6 9v3h14V9M13 12v5" stroke="#e2e8f0" stroke-width="1.6" fill="none"/></svg>
+    <span>FlowPortal</span>
+  </div>
+  <input id="name" class="nameinput" value="Untitled diagram" aria-label="Diagram name" spellcheck="false">
+  <div class="seg" id="modes" role="tablist" aria-label="Palette">
+    <button data-mode="arch" class="on">Architecture</button>
+    <button data-mode="flow">Workflow</button>
+    <button data-mode="uml">UML</button>
+  </div>
+  <select id="tpl" aria-label="Load a template"><option value="">Templates…</option></select>
+  <div class="sp"></div>
+  <button id="undo" class="ib" title="Undo (Ctrl+Z)">↶</button>
+  <button id="redo" class="ib" title="Redo (Ctrl+Shift+Z)">↷</button>
+  <button id="snap" class="tg on" title="Snap to grid">Grid</button>
+  <button id="anim" class="tg" title="Animate the direction of flow on connectors">Animate flow</button>
+  <details id="exp" class="menu"><summary>Export</summary>
+    <div class="pop">
+      <button data-x="svg">SVG image</button>
+      <button data-x="png">PNG image</button>
+      <button data-x="json">JSON (re-importable)</button>
+      <hr>
+      <button data-x="import">Import JSON…</button>
+      <button data-x="clear">New blank diagram</button>
+    </div>
+  </details>
+  <input id="file" type="file" accept=".json,application/json" hidden>
+</header>
+
+<div id="main">
+  <aside id="pal">
+    <input id="q" type="search" placeholder="Search components" aria-label="Search components">
+    <div id="palList"></div>
+  </aside>
+
+  <section id="cv">
+    <svg id="svg" xmlns="http://www.w3.org/2000/svg" tabindex="0" aria-label="Diagram canvas"></svg>
+    <div id="banner" hidden></div>
+    <div id="stats"></div>
+    <div id="zoom">
+      <button id="zout" title="Zoom out">−</button>
+      <span id="zpct">100%</span>
+      <button id="zin" title="Zoom in">+</button>
+      <button id="zfit" title="Fit diagram to window">Fit</button>
+    </div>
+    <div id="hint">Drag a handle from one component to another to connect · wheel zooms · drag background pans · double-click to rename</div>
+    <div id="toast" role="status"></div>
+  </section>
+
+  <aside id="side">
+    <nav id="tabs">
+      <button data-p="Inspect" class="on">Inspect</button>
+      <button data-p="Review">Review <b id="rv" hidden>0</b></button>
+      <button data-p="Scale">Scale</button>
+      <button data-p="Learn">Learn</button>
+    </nav>
+    <div id="pInspect" class="panel"></div>
+    <div id="pReview" class="panel" hidden></div>
+    <div id="pScale" class="panel" hidden></div>
+    <div id="pLearn" class="panel" hidden></div>
+  </aside>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/analysis.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
