@@ -603,11 +603,16 @@
 
   /* ---------------- templates ---------------- */
   (function buildTpl() {
-    const sel = $('#tpl'); const g = { arch: 'Architecture', flow: 'Workflow', uml: 'UML' }; const by = {};
-    Object.keys(FP.TEMPLATES).forEach((k) => { const t = FP.TEMPLATES[k]; (by[t.mode] = by[t.mode] || []).push(k); });
-    Object.keys(g).forEach((m) => { if (!by[m]) return; const og = document.createElement('optgroup'); og.label = g[m]; by[m].forEach((k) => { const o = document.createElement('option'); o.value = k; o.textContent = FP.TEMPLATES[k].name; og.appendChild(o); }); sel.appendChild(og); });
-    sel.addEventListener('change', () => { if (sel.value) loadTemplate(sel.value); sel.value = ''; });
+    const sel = $('#tpl'); const order = ['Reference architectures', 'Industry examples', 'Data & streaming', 'Workflow', 'UML']; const by = {};
+    const blank = document.createElement('option'); blank.value = '__blank'; blank.textContent = '＋ Blank canvas'; sel.appendChild(blank);
+    Object.keys(FP.TEMPLATES).forEach((k) => { const t = FP.TEMPLATES[k]; (by[t.group] = by[t.group] || []).push(k); });
+    order.forEach((g) => { if (!by[g]) return; const og = document.createElement('optgroup'); og.label = g; by[g].forEach((k) => { const o = document.createElement('option'); o.value = k; o.textContent = FP.TEMPLATES[k].name; og.appendChild(o); }); sel.appendChild(og); });
+    sel.addEventListener('change', () => { if (sel.value === '__blank') newCanvas(); else if (sel.value) loadTemplate(sel.value); sel.value = ''; });
   })();
+  function newCanvas() {
+    snapshot(); S.model = { items: [], edges: [] }; S.sel.clear(); S.name = 'Untitled diagram'; $('#name').value = S.name; S.view = { x: 40, y: 40, k: 1 };
+    showBanner(); renderAll(); toast('New blank canvas. Ctrl+Z brings your previous diagram back.');
+  }
   function showBanner(title, text) { const b = $('#banner'); if (!title) { b.hidden = true; return; } b.innerHTML = `<button aria-label="Close">×</button><b>${ESC(title)}</b>${ESC(text)}`; b.hidden = false; }
   $('#banner').addEventListener('click', (ev) => { if (ev.target.tagName === 'BUTTON') $('#banner').hidden = true; });
   function loadTemplate(key, quiet) {
@@ -638,7 +643,7 @@
       img.onload = () => { const c = document.createElement('canvas'); c.width = Math.round(e.w * sc); c.height = Math.round(e.h * sc); const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height); c.toBlob((bl) => download(slug() + '.png', bl)); };
       img.onerror = () => toast('PNG export failed; use SVG instead.'); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(e.xml);
     } else if (x === 'import') $('#file').click();
-    else if (x === 'clear') { snapshot(); S.model = { items: [], edges: [] }; S.sel.clear(); S.name = 'Untitled diagram'; $('#name').value = S.name; showBanner(); renderAll(); }
+    else if (x === 'clear') newCanvas();
   });
   document.addEventListener('click', (ev) => { if (!ev.target.closest('#exp')) $('#exp').open = false; });
   $('#file').addEventListener('change', (ev) => {
@@ -648,7 +653,7 @@
   });
 
   /* ---------------- toolbar ---------------- */
-  $('#undo').onclick = undo; $('#redo').onclick = redo;
+  $('#new').onclick = newCanvas; $('#undo').onclick = undo; $('#redo').onclick = redo;
   $('#snap').onclick = (e) => { S.snap = !S.snap; e.currentTarget.classList.toggle('on', S.snap); };
   $('#anim').onclick = (e) => { S.anim = !S.anim; e.currentTarget.classList.toggle('on', S.anim); drawNow(); };
   $('#zin').onclick = () => zoomAt(1.25); $('#zout').onclick = () => zoomAt(0.8); $('#zfit').onclick = fitView;
